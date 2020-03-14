@@ -25,15 +25,26 @@ Deploy Kafka, Prometheus and Grafana services using Docker. Depending on your ne
 Create `demo-topic` with 6 partitions and 3 replicas.
 
 ```bash
-./bin/kafka-topics --create --partitions 6 --replication-factor 3 --topic demo-topic
+$KAFKA_HOME/bin/kafka-topics --create --partitions 6 --replication-factor 3 --topic demo-topic
 ```
 
 **4. Produce messages.**
 
-Open a new terminal window, generate some message to simulate producer load.
+Open a new terminal window, generate some message to simulate producer load. 
+
+* [Kafka Benchmark Commands](https://gist.github.com/jhidalgo3/014f2626fff717c0650583467b50f20c)
 
 ```bash
-./bin/kafka-producer-perf-test --throughput 500 --num-records 100000000 --topic demo-topic --record-size 100
+$KAFKA_HOME/bin/kafka-producer-perf-test \
+  --topic test \
+  --num-records 5000\
+  --record-size 100 \
+  --throughput -1 \
+  --producer-props acks=1 \
+  bootstrap.servers=localhost:9092 \
+  buffer.memory=67108864 \
+  batch.size=8196
+
 ```
 
 **5. Consume messages.**
@@ -41,7 +52,7 @@ Open a new terminal window, generate some message to simulate producer load.
 Open a new terminal window, generate some message to simulate consumer load.
 
 ```bash
-./bin/kafka-producer-perf-test --throughput 500 --num-records 100000000 --topic demo-topic --record-size 100
+$KAFKA_HOME/bin/kafka-producer-perf-test --throughput 500 --num-records 100000000 --topic demo-topic --record-size 100
 ```
 
 **6. Open Grafana.**

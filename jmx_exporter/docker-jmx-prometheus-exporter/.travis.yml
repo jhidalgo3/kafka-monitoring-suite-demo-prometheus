@@ -1,0 +1,24 @@
+sudo: required
+
+language: java
+
+services:
+  - docker
+
+install:
+  - docker build -t sscaling/jmx-prometheus-exporter .
+
+before_script:
+  - docker-compose -f test/docker-compose.yml up -d exporter
+
+script:
+  - sleep 5
+  - docker-compose -f test/docker-compose.yml run query | grep 'jmx_scrape_error 0.0'
+
+deploy:
+  - provider: script
+    script: bash docker_push "$TRAVIS_TAG"
+    on:
+      tags: true
+  - provider: script
+    script: bash docker_push latest
